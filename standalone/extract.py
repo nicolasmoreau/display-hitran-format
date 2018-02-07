@@ -14,10 +14,12 @@ wavenumbers_position = 1
 # position of intensities column in hitran file
 intensities_position = 2
 
-# dispplay data from line (after sorting)
-interval_start = 0
+# display data from line (after sorting)
+# not used at the moment
+#interval_start = 0
+
 # dispplay data until line
-interval_end = 10000
+interval_end = 50
 
 # directory containing data files
 DATA_DIRECTORY = '../data'
@@ -49,8 +51,10 @@ def get_data_axis(data_file, column_id_1, column_id_2):
   with open(data_file, "r") as f:
     for line in f.readlines():
       parts = line.split()
+
       # cast to float values for later sort
-      result.append([float(parts[column_id_1]), float(parts[column_id_2])])
+      if len(parts) > 0 :
+        result.append([float(parts[column_id_1]), float(parts[column_id_2])])
   return result
 
 """
@@ -75,17 +79,18 @@ if len(files) != 2 :
   sys.exit()
 
 datasets = get_datasets(files, wavenumbers_position)
-
-
 plotted_data = {}
-# format extracted data as javascript arrays
+
+# if interval_end is greater than the number of points in a dataset
+# interval_end = len(smaller_dataset)
 for idx, dataset in enumerate(datasets) :
   if len(dataset) < interval_end :
-    print("interval_end value is greater than the number of values in the %s dataset"%prefixes[idx])
-    sys.exit()
+    interval_end = len(dataset)
     
+# format extracted data as javascript arrays
+for idx, dataset in enumerate(datasets) :
   plotted_data[prefixes[idx]] = []
-  for i in range(interval_start, interval_end) :
+  for i in range(0, interval_end) :
     plotted_data[prefixes[idx]].append("[%s,  %s]"%(dataset[i][0], dataset[i][1]))
 
 # writes javascript file data.js that will be displayed in index.html
