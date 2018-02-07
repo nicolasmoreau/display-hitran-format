@@ -1,0 +1,96 @@
+<html>
+   <head>
+      <title>Highcharts Tutorial</title>
+      <script src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js">
+      </script>
+      <script src = "https://code.highcharts.com/highcharts.js"></script>  
+      <script src = "./data.js"></script>  
+   </head>
+   
+   <body>
+      <div id = "container" style = "width: 800px; height: 600px; margin: 0 auto"></div>
+      <script language = "JavaScript">
+         $(document).ready(function() {  
+            var chart = {
+               type: 'scatter',
+               zoomType: 'xy'
+            };
+            var title = {
+               text: '#title#'   
+            };
+            var subtitle = {
+               text: ''  
+            };
+            var xAxis = {
+               title: {
+                  enabled: true,
+                  text: 'Wavenumbers'
+               },
+               startOnTick: true,
+               endOnTick: true,
+               showLastLabel: true
+            };
+            var yAxis = {
+               title: {
+                  text: 'Intensities'
+               }
+            };
+            var legend = {   
+               layout: 'vertical',
+               align: 'left',
+               verticalAlign: 'top',
+               x: 100,
+               y: 70,
+               floating: true,
+               backgroundColor: (
+                  Highcharts.theme && Highcharts.theme.legendBackgroundColor) ||
+                  '#FFFFFF',
+               borderWidth: 1
+            }  
+            var plotOptions = {
+               scatter: {
+                  marker: {
+                     radius: 3,
+                     states: {
+                        hover: {
+                           enabled: false,
+                           lineColor: 'rgb(100,100,100)'
+                        }
+                     }
+                  },
+                  states: {
+                     hover: {
+                        marker: {
+                           enabled: false
+                        }
+                     }
+                  }
+               }
+            };
+            var series = [
+               {
+                  name: '#dataset1#',
+                  color: 'red',
+                  data: dataset1_data                  
+               },{
+                  name: '#dataset2#',
+                  color: 'blue',
+                  data: dataset2_data                  
+               }
+            ];     
+      
+            var json = {};   
+            json.chart = chart; 
+            json.title = title;   
+            json.subtitle = subtitle; 
+            json.legend = legend;
+            json.xAxis = xAxis;
+            json.yAxis = yAxis;  
+            json.series = series;
+            json.plotOptions = plotOptions;
+            $('#container').highcharts(json);
+         });
+      </script>
+   </body>
+   
+</html>
