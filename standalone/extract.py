@@ -14,15 +14,30 @@ wavenumbers_position = 1
 # position of intensities column in hitran file
 intensities_position = 2
 
-# display data from line (after sorting)
-# not used at the moment
-#interval_start = 0
-
-# dispplay data until line
-interval_end = 50
 
 # directory containing data files
 DATA_DIRECTORY = '../data'
+
+### Plot options
+
+# maximum number of points plotted
+max_plotted_points = 10000
+# logarithmic or empty
+xaxis_type = ''
+# logarithmic or empty
+yaxis_type = ''
+
+
+  
+def check_axis_type(axis_type):
+  axis_types = ['', 'logarithmic']  
+  if axis_type not in axis_types:
+    print("invalid type for axis : %s" % axis_type)
+    sys.exit()     
+    
+    
+def replace_template_variable(source, variable, value):
+  return source.replace('#'+variable+'#', value)
 
 """
   Returns two lists :
@@ -78,20 +93,20 @@ if len(files) != 2 :
   print("this script requires exactly 2 datafiles")
   sys.exit()
 
+check_axis_type(xaxis_type)
+check_axis_type(yaxis_type)
+
 datasets = get_datasets(files, wavenumbers_position)
 plotted_data = {}
 
-# if interval_end is greater than the number of points in a dataset
-# interval_end = len(smaller_dataset)
-for idx, dataset in enumerate(datasets) :
-  if len(dataset) < interval_end :
-    interval_end = len(dataset)
-    
 # format extracted data as javascript arrays
 for idx, dataset in enumerate(datasets) :
   plotted_data[prefixes[idx]] = []
-  for i in range(0, interval_end) :
+  print("length of dataset : %s "%len(dataset))
+  i = 0
+  while i < len(dataset) and i < max_plotted_points :
     plotted_data[prefixes[idx]].append("[%s,  %s]"%(dataset[i][0], dataset[i][1]))
+    i = i+1
 
 # writes javascript file data.js that will be displayed in index.html
 with open('data.js', 'w') as output:
@@ -105,9 +120,11 @@ with open('data.js', 'w') as output:
 with open('index.html.template', 'r') as source:
   with open('index.html', 'w') as output:
     source_html = source.read()
-    source_html = source_html.replace('#title#', '%s / %s'%(prefixes[0], prefixes[1]))
-    source_html = source_html.replace('#dataset1#', prefixes[0])
-    source_html = source_html.replace('#dataset2#', prefixes[1])
+    source_html = replace_template_variable(source_html, 'title', '%s / %s'%(prefixes[0], prefixes[1]))
+    source_html = replace_template_variable(source_html, 'dataset1', prefixes[0])
+    source_html = replace_template_variable(source_html, 'dataset2', prefixes[1])
+    source_html = replace_template_variable(source_html, 'xaxis_type', xaxis_type)
+    source_html = replace_template_variable(source_html, 'yaxis_type', yaxis_type)
     output.write(source_html)
 
     

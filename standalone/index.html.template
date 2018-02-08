@@ -26,6 +26,7 @@
                   enabled: true,
                   text: 'Wavenumbers'
                },
+               type : '#xaxis_type#',
                startOnTick: true,
                endOnTick: true,
                showLastLabel: true
@@ -33,7 +34,8 @@
             var yAxis = {
                title: {
                   text: 'Intensities'
-               }
+               },
+               type : '#yaxis_type#'
             };
             var legend = {   
                layout: 'vertical',
