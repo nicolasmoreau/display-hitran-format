@@ -117,8 +117,8 @@ with open('data.js', 'w') as output:
     output.write('];\n')
     i = i+1
     
-with open('index.html.template', 'r') as source:
-  with open('index.html', 'w') as output:
+with open('.'+os.sep+'js'+os.sep+'plot.js.template', 'r') as source:
+  with open('.'+os.sep+'js'+os.sep+'plot.js', 'w') as output:
     source_html = source.read()
     source_html = replace_template_variable(source_html, 'title', '%s / %s'%(prefixes[0], prefixes[1]))
     source_html = replace_template_variable(source_html, 'dataset1', prefixes[0])
