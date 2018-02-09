@@ -13,7 +13,7 @@ $(document).ready(function() {
        
     };
     var title = {
-       text: 'hitran / smpo'   
+       text: 'Hitran format file comparison'   
     };
     var subtitle = {
        text: ''  
@@ -66,17 +66,7 @@ $(document).ready(function() {
           }
        }
     };
-    var series = [
-       {
-          name: 'hitran',
-          color: 'red',
-          data: dataset1_data                  
-       },{
-          name: 'smpo',
-          color: 'blue',
-          data: dataset2_data         
-       }
-    ];     
+
     var json = {};   
     
     json.chart = chart; 
@@ -85,10 +75,8 @@ $(document).ready(function() {
     json.legend = legend;
     json.xAxis = xAxis;
     json.yAxis = yAxis;  
-    json.series = series;
+    json.series = [];
     json.plotOptions = plotOptions;
-    plot(json);
-
     
     function plot(json){
       document.getElementById('mask-div').style.display='block';
@@ -114,6 +102,55 @@ $(document).ready(function() {
       event.data.json.xAxis.type = log_switch.value;
       $("#switch-log-x").html(log_switch.text);
       plot(event.data.json);
-    });      
+    });   
+    
+    $("#clear-plot").bind("click", {json : json},function(event){
+      json.series = [];
+      plot(json);
+    });  
+    
+    function read_hitran_file(content){    
+      var lines = $.trim(content).split("\n");
+      var result = [];
+      var max_lines = 10000;
+      if(lines.length < max_lines){
+        max_lines = lines.length;
+      }
+      for(var i = 0; i < max_lines; i++){
+        var wavenumber = parseFloat(lines[i].substring(3, 14));
+        var intensity = parseFloat(lines[i].substring(15, 25));
+        result.push([wavenumber, intensity]);
+      }
+      return result;
+    }
+
+    var fileInput = document.querySelector('#file-selector');
+
+    fileInput.addEventListener('change', function() {
+      var reader = new FileReader();
+      var colors = ['red', 'blue'];
+      
+      reader.addEventListener('load', function() {    
+        var data = read_hitran_file(reader.result); 
+        var series = json.series;
+        if(series.length < 2){
+          series.push({
+            name: fileInput.files[0].name,
+            color: colors[series.length],
+            data: data 
+            });
+          json.series = series;
+          plot(json);
+        }else{
+          alert("Only 2 data files can be opened at once.");
+        }        
+      });
+      reader.readAsText(fileInput.files[0]);
+
+    });
+
+    fileInput.addEventListener('click', function() {    
+      fileInput.value = null;
+    });
 
  });
